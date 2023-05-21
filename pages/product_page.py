@@ -2,24 +2,31 @@ from .base_page import BasePage
 from .locators import ProductPageLocators
 
 class ProductPage(BasePage):
-    def add_to_cart_page(self):
-        add_btn = self.browser.find_element(*ProductPageLocators.ADD_TO_CART)
-        add_btn.click()
+    def add_to_basket(self):
+        add_basket_button = self.browser.find_element(*ProductPageLocators.BASKET_BUTTON)
+        add_basket_button.click()
 
+    def should_be_basket_button(self):
+        assert self.is_element_present(*ProductPageLocators.BASKET_BUTTON), "Basket button is not presented"
 
-    def should_add_to_cart_page(self):
-        assert self.is_element_present(*ProductPageLocators.ADD_TO_CART), "Add btn is not presented"
-    def product_name(self):
-        name=self.browser.find_element(*ProductPageLocators.PRODUCT_NAME)
-        return name.text
-    def product_price(self):
-        price=self.browser.find_element(*ProductPageLocators.PRODUCT_PRICE)
-        return price.text
+    def should_be_alert_about_adding(self):
+        assert self.is_element_present(*ProductPageLocators.ALERT_ADDING_PRODUCT), "Alert about adding is not presented"
+        assert self.is_element_present(*ProductPageLocators.PRODUCT_NAME), "Product name is not presented"
+        alert_text = self.browser.find_element(*ProductPageLocators.ALERT_ADDING_PRODUCT).text
+        name_product = self.browser.find_element(*ProductPageLocators.PRODUCT_NAME).text
+        assert alert_text == name_product, "Product name is not right"
+
+    def should_be_alert_with_price_basket(self):
+        assert self.is_element_present(*ProductPageLocators.ALERT_PRICE_BASKET), "Alert with price is not presented"
+        assert self.is_element_present(*ProductPageLocators.PRICE_PRODUCT), "Product price is not presented"
+        alert_price = self.browser.find_element(*ProductPageLocators.ALERT_PRICE_BASKET).text
+        price_product = self.browser.find_element(*ProductPageLocators.PRICE_PRODUCT).text.split(" ")[0]
+        assert price_product in alert_price, "Price is not right"
 
     def should_not_be_success_message(self):
-        assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE), \
-            "Success message is presented, but should not be"
+        assert self.is_not_element_present(
+            *ProductPageLocators.ALERT_ADDING_PRODUCT), "Success message is presented, but should not be"
 
-    def should_disappeared(self):
-        assert self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE), \
-            "Success message is not disappeared"
+    def should_be_disappeared_success_message(self):
+        assert self.is_disappeared(
+            *ProductPageLocators.ALERT_ADDING_PRODUCT), "Success message is not disappeared"
